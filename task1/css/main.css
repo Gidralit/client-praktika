@@ -71,10 +71,10 @@ button {
     border: 1px solid #d8d8d8;
 }
 
-input {
-    width: 100%;
+input:not([type="radio"]) {
     height: 25px;
     margin-bottom: 20px;
+    width: 100%;
 }
 
 textarea {
@@ -90,4 +90,14 @@ textarea {
 .activeTab {
     color: #16C0B0;
     text-decoration: underline;
+}
+
+.radio {
+    display: flex;
+    align-items: center;
+    justify-content: center ;
+    margin-bottom: 15px;
+}
+.radio input {
+    transform: scale(1.5);
 }

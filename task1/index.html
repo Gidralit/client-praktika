@@ -7,14 +7,13 @@
     <title>Document</title>
 </head>
 <body>
-    <script defer src="js/vue.min.js"></script>
-    <script defer src="js/main.js"></script>
-    <div id="app">
-        <div class="cart">
-            <p>Cart({{ cart.length }})</p>
-        </div>
-        <product :premium="premium" @add-to-cart="updateCart" @delete-from-cart="updateCart"></product>
+<script defer src="js/vue.min.js"></script>
+<script defer src="js/main.js"></script>
+<div id="app">
+    <div class="cart">
+        <p>Cart({{ cart.length }})</p>
     </div>
-
+    <product :premium="premium" @add-to-cart="updateCart"></product>
+</div>
 </body>
 </html>
