@@ -145,6 +145,23 @@ Vue.component('product-review', {
     }
 })
 
+Vue.component('cart', {
+    props: {
+        cart: {
+            type: Array,
+        }
+    },
+    template: `
+      <p>Count: {{ cart.length }}</p>
+        <div v-show="green == true">123</div>
+    `,
+    computed: {
+        green(){
+            return true;
+        }
+    }
+})
+
 Vue.component('product', {
     props: {
         premium: {
@@ -201,7 +218,7 @@ Vue.component('product', {
                     variantId: 2235,
                     variantColor: 'blue',
                     variantImage: "./assets/vmSocks-blue-onWhite.jpg",
-                    variantQuantity: 0
+                    variantQuantity: 5
                 }
             ],
             reviews: []
@@ -209,7 +226,7 @@ Vue.component('product', {
     },
     methods: {
         addToCart() {
-            this.$emit('add-to-cart', this.variants[this.selectedVariant].variantId);
+            this.$emit('add-to-cart', this.variants[this.selectedVariant]);
         },
         updateProduct(index) {
             this.selectedVariant = index;
@@ -248,8 +265,8 @@ let app = new Vue({
         cart: [],
     },
     methods: {
-        updateCart(id) {
-            this.cart.push(id);
+        updateCart(product) {
+            this.cart.push(product);
         }
     },
 })
