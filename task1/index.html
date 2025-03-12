@@ -13,7 +13,7 @@
     <div class="cart">
         <cart :cart="cart"></cart>
     </div>
-    <product :premium="premium" @add-to-cart="updateCart"></product>
+    <product :premium="premium" :cart="cart" @add-to-cart="updateCart"></product>
 </div>
 </body>
 </html>

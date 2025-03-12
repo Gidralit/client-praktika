@@ -153,7 +153,7 @@ Vue.component('cart', {
     },
     template: `
       <div class="cart-container">
-        <p>Cart {{ cart.length }}</p>
+        <p>Cart</p>
         <div class="color-box-cart-container" v-show="cart[0].length != 0">
             <div class="color-box-cart green"></div>x {{ cart[0].length }}
         </div>
@@ -180,6 +180,9 @@ Vue.component('product', {
         premium: {
             type: Boolean,
             required: true
+        },
+        cart: {
+            type: Array
         }
     },
     template: `
@@ -203,7 +206,7 @@ Vue.component('product', {
            <button
                    v-on:click="addToCart"
                    :disabled="!inStock"
-                   :class="{ disabledButton: !inStock }"
+                   :class="{disabledButton: !inStock}"
            >
                Add to cart
            </button>    
@@ -224,13 +227,13 @@ Vue.component('product', {
                 {
                     variantId: 2234,
                     variantColor: 'green',
-                    variantImage: "./assets/vmSocks-green-onWhite.jpg",
+                    variantImage: "./image/vmSocks-green-onWhite.jpg",
                     variantQuantity: 10
                 },
                 {
                     variantId: 2235,
                     variantColor: 'blue',
-                    variantImage: "./assets/vmSocks-blue-onWhite.jpg",
+                    variantImage: "./image/vmSocks-blue-onWhite.jpg",
                     variantQuantity: 5
                 }
             ],
@@ -239,6 +242,7 @@ Vue.component('product', {
     },
     methods: {
         addToCart() {
+            this.variants[this.selectedVariant].variantQuantity -= 1;
             this.$emit('add-to-cart', this.variants[this.selectedVariant]);
         },
         updateProduct(index) {
