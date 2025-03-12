@@ -152,12 +152,25 @@ Vue.component('cart', {
         }
     },
     template: `
-      <p>Count: {{ cart.length }}</p>
-        <div v-show="green == true">123</div>
+      <div class="cart-container">
+        <p>Cart {{ cart.length }}</p>
+        <div class="color-box-cart-container" v-show="cart[0].length != 0">
+            <div class="color-box-cart green"></div>x {{ cart[0].length }}
+        </div>
+        <div class="color-box-cart-container" v-show="cart[1].length != 0">
+            <div class="color-box-cart blue"></div>x {{ cart[1].length }}
+        </div>
+      </div>
     `,
+    data(){
+        return {
+            greenArray: [],
+            blueArray: [],
+        }
+    },
     computed: {
         green(){
-            return true;
+            return true
         }
     }
 })
@@ -230,7 +243,6 @@ Vue.component('product', {
         },
         updateProduct(index) {
             this.selectedVariant = index;
-            console.log(index);
         },
     },
     computed: {
@@ -262,11 +274,15 @@ let app = new Vue({
     el: '#app',
     data: {
         premium: true,
-        cart: [],
+        cart: [[],[]],
     },
     methods: {
         updateCart(product) {
-            this.cart.push(product);
+            if(product.variantColor == 'green'){
+                this.cart[0].push(product);
+            }else{
+                this.cart[1].push(product);
+            }
         }
     },
 })
