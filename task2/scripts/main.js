@@ -18,10 +18,11 @@ Vue.component('modalScreen', {
                         <label for="name">Название карточки</label>
                         <input id="name" type="text">
                         <p>Список задач:</p>
-                            <form @submit.prevent="addTaskSubmit">
-                                <input type="text" v-model="taskName">
-                                <button @click="addTask">Добавить задачу</button
-                            </form>>
+                            <ul>
+                                <li v-for="(task, index) in tasks">{{task.name}} <button @click="deleteTask">-</button></li>
+                            </ul>
+                            <input type="text" v-model="taskName">
+                            <button @click="addTask">Добавить задачу</button>
                     </div>
                     <div class="modal-footer">
                         <button @click="$emit('close')">Отмена</button>
@@ -46,7 +47,10 @@ Vue.component('modalScreen', {
     },
     methods:{
         addTask(){
-            this.taskName =
+            this.tasks.push({name: this.taskName, ready: false});
+        },
+        deleteTask(){
+            this.tasks.pop();
         }
     }
 
