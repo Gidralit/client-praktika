@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/styles.css">
+    <script defer src="scripts/vue.min.js"></script>
+    <script defer src="scripts/main.js"></script>
+    <title>Канбан доска</title>
+</head>
+<body>
+    <div id="app">
+        <h1>Канбан доска</h1>
+        <div class="columns">
+            <column
+                v-for="(column, index) in columns"
+                :key="index"
+                :column="column"
+                :column-index="index"
+                @add-card="addCard"
+                @move-card="moveCard"
+                @delete-card="deleteCard"></column>
+        </div>
+    </div>
+</body>
+</html>
