@@ -31,6 +31,35 @@ Vue.component('card', {
             </div>
         </div>
     `,
+    data(){
+        return {
+            error: '',
+        }
+    },
+    methods: {
+        editCard(){
+            this.card.isEditing = true;
+            this.error = '';
+        },
+        saveCard(){
+            if(!this.card.title.trim()){
+                this.error = 'Заголовок не может быть пустым';
+                return;
+            }
+            this.card.isEditing = false;
+            this.card.lastEdited = Date.now();
+            this.$emit('update-card', this.card);
+            this.error = '';
+        },
+        onDragStart(event){
+            event.dataTransfer.setData('cardId', this.card.id);
+            event.dataTransfer.setData('fromColumnIndex', this.columnIndex);
+        },
+        returnToWork(card){
+            card.showReturnInput = true;
+        },
+        
+    }
 })
 
 Vue.component('column', {
