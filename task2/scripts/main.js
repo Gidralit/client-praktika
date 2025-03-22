@@ -14,7 +14,7 @@ Vue.component('card', {
             <h3>{{card.name}}</h3>
             <div 
             v-for="(task, index) in card.tasks"
-            :key = "index">
+            :key = "index + task.name">
                 <label>{{task.name}}
                     <input 
                     type="checkbox" 
@@ -81,6 +81,7 @@ Vue.component('modal', {
             nameCard: '',
             errors: [],
             card: {
+                id: 0,
                 name: '',
                 tasks: [],
             },
@@ -98,12 +99,20 @@ Vue.component('modal', {
                 }
                 return;
             }
-            if(this.card.tasks.length === 0){
-                this.errors.push('Пожалуйста, добавьте хотя бы одну задачу');
+            if(this.card.tasks.length < 3){
+                this.errors.push('Вы не можете создать карточку, у которой менее 3-ех задач');
                 return;
             }
             this.card.name = this.nameCard;
+            this.card.id = Math.floor(Math.random() * 100);
             this.$emit('add-card', this.card);
+            this.nameCard = '';
+            this.task = '';
+            this.card = {
+                id: 0,
+                name: '',
+                tasks: [],
+            };
             this.$emit('save-data');
         },
         addTask(){
@@ -112,7 +121,10 @@ Vue.component('modal', {
                 this.errors.push('Пожалуйста, введите задачу');
                 return;
             }
-
+            if(this.card.tasks.length === 5){
+                this.errors.push('Вы не можете добавить в карточку более 3-ех задач');
+                return;
+            }
             let newTask = {name: this.task, ready: false};
 
             this.card.tasks.push(newTask);
@@ -135,6 +147,10 @@ Vue.component('column', {
         columnIndex: {
             type: Number,
             required: true,
+        },
+        firstColumnBlocked: {
+            type: Boolean,
+            default: false,
         }
     }, 
     template: `
@@ -152,11 +168,11 @@ Vue.component('column', {
                 @save-data="$emit('save-data')"
             ></modal>
             <h2>{{column.title}}</h2>
-            <button v-show="columnIndex === 0" type="button" @click="openModal" :disabled="column.canEdit">Добавить карточку</button>
+            <button v-show="columnIndex === 0" type="button" @click="openModal" v-show="canAddCard">Добавить карточку</button>
             <div class="cards">
                 <card
                     v-for="(card, index) in column.cards"
-                    :key="index"
+                    :key="card.name + index + card.id"
                     :card="card"
                     :cardIndex="index"
                     @update-card="cardUpdate"
@@ -190,6 +206,11 @@ Vue.component('column', {
         cardUpdate(cardIndex){
             this.$emit('card-update', cardIndex, this.columnIndex);
         }
+    },
+    computed: {
+        canAddCard(){
+            return this.columnIndex === 0 && this.column.cards.length < 3 && !this.firstColumnBlocked;
+        }
     }
 })
 
@@ -198,7 +219,7 @@ Vue.component('column', {
         data(){
             return {
                 columns: JSON.parse(localStorage.getItem('columns')) || [
-                    {title: 'Начато', cards: []},
+                    {title: 'Начато', cards: [], canEdit: true},
                     {title: 'В процессе', cards: []},
                     {title: 'Завершенные', cards: []}
                 ],
@@ -212,19 +233,21 @@ Vue.component('column', {
                 if(progress >= 0.5 && columnIndex === 0){
                     this.columns[1].cards.push(this.columns[columnIndex].cards.splice(cardIndex, 1)[0]);
                 }
-                
+                if(progress === 1 && columnIndex === 1){
+                    let card = this.columns[columnIndex].cards[cardIndex];
+                    card.dateToReady = new Date();
+                    this.columns[columnIndex].cards.splice(cardIndex, 1);
+                    this.columns[2].cards.push(card);
+                }
+                this.saveData();
             },
             saveData(){
                 localStorage.setItem("columns", JSON.stringify(this.columns));
             }
         },
-        computed:{
-            canEdit(){
-                if(this.columns[1].cards.length === 5){
-                    return false;
-                }else{
-                    return true;
-                }
+        computed: {
+            firstColumnBlocked() {
+                return this.columns[1].cards.length >= 5;
             }
         }
     });

@@ -16,6 +16,7 @@
         :key="index"
         :column-index="index"
         :column="column"
+        :first-column-blocked="firstColumnBlocked && index === 0"
         @card-update="updateColumn"
         @save-data="saveData"
       ></column>
