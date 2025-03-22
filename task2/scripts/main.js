@@ -12,23 +12,22 @@ Vue.component('card', {
     template: `
         <div class="card">
             <h3>{{card.name}}</h3>
-            <ul>
-                <li v-for="task in card.tasks">
+            <div 
+            v-for="(task, index) in card.tasks"
+            :key = "index">
                 <label>{{task.name}}
-                    <input type="checkbox" v-model="task.ready" @change="taskCompletionUpdate(cardIndex, task)">
+                    <input 
+                    type="checkbox" 
+                    v-model="task.ready" 
+                    @change="taskCompletionUpdate">
                 </label>
-                </li>
-            </ul>
+            </div>
             <h3 class="card-date-ready" v-show="card.dateToReady" >{{card.dateToReady}}</h3>
         </div>
     `,
     methods: {
-        taskCompletionUpdate(cardIndex, task){
-            let indexes = {
-                cardIndex: cardIndex,
-                taskIndex: this.card.tasks.indexOf(task)
-            }
-            this.$emit('task-updated', indexes);
+        taskCompletionUpdate(){
+            this.$emit('update-card', this.cardIndex)
         }
     }
 
@@ -105,13 +104,6 @@ Vue.component('modal', {
             }
             this.card.name = this.nameCard;
             this.$emit('add-card', this.card);
-            this.nameCard = '';
-            this.task = '';
-            this.card = {
-                name: '',
-                tasks: [],
-                dateToReady: null,
-            }
             this.$emit('save-data');
         },
         addTask(){
@@ -120,14 +112,17 @@ Vue.component('modal', {
                 this.errors.push('Пожалуйста, введите задачу');
                 return;
             }
-            this.card.tasks.push({name: this.task, ready: false})
+
+            let newTask = {name: this.task, ready: false};
+
+            this.card.tasks.push(newTask);
+            newTask = {};
+            this.task = '';
         },
         closeModal(){
             this.$emit('close-modal');
             this.errors = [];
         },
-
-
     }
 });
 
@@ -157,13 +152,16 @@ Vue.component('column', {
                 @save-data="$emit('save-data')"
             ></modal>
             <h2>{{column.title}}</h2>
-            <button v-show="columnIndex === 0" type="button" @click="openModal">Добавить карточку</button>
-            <card
-                v-for="(card, index) in column.cards"
-                :card="card"
-                :cardIndex="index"
-                @task-updated="cardUpdate"
-            ></card>
+            <button v-show="columnIndex === 0" type="button" @click="openModal" :disabled="column.canEdit">Добавить карточку</button>
+            <div class="cards">
+                <card
+                    v-for="(card, index) in column.cards"
+                    :key="index"
+                    :card="card"
+                    :cardIndex="index"
+                    @update-card="cardUpdate"
+                ></card>
+            </div>
         </div>
     `,
     data(){
@@ -172,6 +170,7 @@ Vue.component('column', {
             errors: [],
         }
     },
+
     methods: {
         openModal(){
             this.errors = [];
@@ -188,58 +187,44 @@ Vue.component('column', {
             this.column.cards.push(card);
             this.closeModal();
         },
-        cardUpdate(indexes){
-            indexes.columnIndex = this.columnIndex;
-            this.$emit('card-update', indexes)
+        cardUpdate(cardIndex){
+            this.$emit('card-update', cardIndex, this.columnIndex);
         }
     }
 })
 
-let app = new Vue({
-    el: '#app',
-    data(){
-        return {
-            columns: JSON.parse(localStorage.getItem('columns')) || [
-                {title: 'Начато', cards: []},
-                {title: 'В процессе', cards: []},
-                {title: 'Завершенные', cards: []}
-            ],
-            isVisible: false,
-        }
-    },
-    methods: {
-        moveCard(columnIndex, cardIndex, moveToIndex){
-            const card = this.columns[columnIndex].cards[cardIndex];
-            this.columns[columnIndex].cards.splice(cardIndex, 1);
-            if(moveToIndex === 2){
-                card.dateToReady = new Date(Date.now()).toString();
+    let app = new Vue({
+        el: '#app',
+        data(){
+            return {
+                columns: JSON.parse(localStorage.getItem('columns')) || [
+                    {title: 'Начато', cards: []},
+                    {title: 'В процессе', cards: []},
+                    {title: 'Завершенные', cards: []}
+                ],
             }
-            this.columns[moveToIndex].cards.push(card);
         },
-        updateColumn(indexes){
+        methods: {
+            updateColumn(cardIndex, columnIndex){
+                let completedTasks = this.columns[columnIndex].cards[cardIndex].tasks.filter(item => item.ready)
+                let progress = completedTasks.length / this.columns[columnIndex].cards[cardIndex].tasks.length;
 
-            let columnIndex = indexes.columnIndex;
-            let cardIndex = indexes.cardIndex;
-            let taskIndex = indexes.taskIndex;
-
-            const tasks = this.columns[columnIndex].cards[cardIndex].tasks;
-            const completedTasks = tasks.filter(task => task.ready);
-            const progress = completedTasks.length / tasks.length;
-            
-
-            if(columnIndex === 0 && progress > 0.5 && progress < 1 && this.columns[1].cards.length < 5){
-                this.moveCard(columnIndex, cardIndex, 1)
-            }else if(progress === 1){
-                this.moveCard(columnIndex, cardIndex, 2)
-            }else if(columnIndex === 2 && progress < 1 && progress > 0.5){
-                this.moveCard(columnIndex, cardIndex, 1)
-            }else{
-                this.moveCard(columnIndex, cardIndex, 0)
+                if(progress >= 0.5 && columnIndex === 0){
+                    this.columns[1].cards.push(this.columns[columnIndex].cards.splice(cardIndex, 1)[0]);
+                }
+                
+            },
+            saveData(){
+                localStorage.setItem("columns", JSON.stringify(this.columns));
             }
-            this.saveData();
         },
-        saveData(){
-            localStorage.setItem("columns", JSON.stringify(this.columns));
+        computed:{
+            canEdit(){
+                if(this.columns[1].cards.length === 5){
+                    return false;
+                }else{
+                    return true;
+                }
+            }
         }
-    }
-});
+    });

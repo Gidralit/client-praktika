@@ -91,6 +91,12 @@ li{
     max-width: 150px;
 }
 
+.card{
+    display: flex;
+    flex-direction: column;
+    
+}
+
 .card-date-ready{
     max-width: 250px;
 }
