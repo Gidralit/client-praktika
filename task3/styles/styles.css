@@ -92,7 +92,7 @@ input, textarea{
 }
 
 input:focus, textarea:focus{
-    outline: 3px dotted black;
+    outline: none;
 }
 
 .card-view{
