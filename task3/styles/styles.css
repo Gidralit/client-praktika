@@ -6,20 +6,23 @@
 }
 
 h1, h2{
-    color: white;
-    border-bottom: 1px solid white;
+    color: black;
 }
 
 body{
-    background-color: rgb(88, 88, 251);
+    background-color: white;
 }
 
 h1{
-    width: 100%;
+    width: calc(100% - 40px);
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 15px 0;
+    margin: 20px;
+    padding: 15px 0;
+    color: white;
+    background-color: rgb(88, 88, 251);
+    border-radius: 20px;
 }
 
 .columns{
@@ -28,13 +31,17 @@ h1{
     justify-content: space-between;
 }
 
+.column h2 {
+    margin-bottom: 20px;
+}
+
 button{
     padding: 5px;
     border: none;
     cursor: pointer;
     border-radius: 10px;
     transition: 0.2s;
-
+    background-color: ;
 }
 
 button:hover{
@@ -50,6 +57,9 @@ button:active{
 
 .cards{
     margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .error{
@@ -62,6 +72,9 @@ button:active{
     display: flex;
     flex-direction: column;
     gap: 10px   ;
+    background-color: rgb(88, 88, 251);
+    padding: 20px;
+    border-radius: 20px;
 }
 
 textarea{
@@ -76,4 +89,11 @@ input, textarea{
 
 input:focus, textarea:focus{
     outline: 3px dotted black;
+}
+
+.card-view{
+    background-color: rgb(88, 88, 251);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
 }
