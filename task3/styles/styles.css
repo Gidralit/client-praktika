@@ -4,6 +4,9 @@
     box-sizing: border-box;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
+*:not(h1, h2){
+    font-size: 15px;
+}
 
 h1, h2{
     color: black;
@@ -41,11 +44,12 @@ button{
     cursor: pointer;
     border-radius: 10px;
     transition: 0.2s;
-    background-color: ;
+    background-color: white;
+    border: 2px solid rgb(88, 88, 251);
 }
 
 button:hover{
-    box-shadow: 1px 1px 5px 1px black;
+    box-shadow: 1px 1px 5px 1px rgb(88, 88, 251);
     transform: scale(1.1);
     transition: 0.2s;
 }
