@@ -58,7 +58,12 @@ Vue.component('card', {
         returnToWork(card){
             card.showReturnInput = true;
         },
-        
+        saveReturnReason(card){
+            if(card.returnReason.trim()){
+                card.showReturnInput = false;
+                this.$emit('move-card', {cardId: card.id, fromColumnIndex: this.columnIndex, toColumnIndex: 1});
+            }
+        }
     }
 })
 
